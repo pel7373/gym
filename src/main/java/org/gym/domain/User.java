@@ -1,25 +1,34 @@
 package org.gym.domain;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+
+import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE;
+
 @Component
+@Scope(SCOPE_PROTOTYPE)
 public class User {
-    private long userId;
+    //private long userId;
     private String firstName;
     private String lastName;
     private String userName;
     private String password;
-    private boolean isActive;
+    private Boolean isActive;
+
+    private int serialNumber;
 
     public User() {
     }
 
-    public long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public User(String firstName, String lastName, String userName, String password, boolean isActive) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.userName = userName;
+        this.password = password;
+        this.isActive = isActive;
     }
 
     public String getFirstName() {
@@ -54,11 +63,22 @@ public class User {
         this.password = password;
     }
 
-    public boolean isActive() {
+    public boolean getIsActive() {
         return isActive;
     }
 
-    public void setActive(boolean active) {
-        isActive = active;
+    public void setIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", userName='" + userName + '\'' +
+                ", password='" + password + '\'' +
+                ", isActive=" + isActive +
+                '}';
     }
 }

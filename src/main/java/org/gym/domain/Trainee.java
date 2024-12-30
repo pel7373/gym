@@ -9,9 +9,10 @@ import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROT
 
 @Component
 @Scope(SCOPE_PROTOTYPE)
-public class Trainee extends User {
+public class Trainee {
     private LocalDate dateOfBirth;
     private String address;
+    private long userId;
 
     public Trainee() {
     }
@@ -30,5 +31,13 @@ public class Trainee extends User {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
     }
 }

@@ -1,0 +1,16 @@
+[
+  {
+    "firstName":"John",
+    "lastName":"Doe",
+    "userName":"John.Doe",
+    "password":"xUwb1dqCi0",
+    "isActive":true
+  },
+  {
+    "firstName":"Jane",
+    "lastName":"Doe",
+    "userName":"Jane.Doe",
+    "password":"yWbisB91bz",
+    "isActive":false
+  }
+]
