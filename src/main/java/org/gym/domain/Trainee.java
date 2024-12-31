@@ -9,13 +9,15 @@ import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROT
 
 @Component
 @Scope(SCOPE_PROTOTYPE)
-public class Trainee {
+public class Trainee extends User {
     private LocalDate dateOfBirth;
     private String address;
     private long userId;
 
     public Trainee() {
     }
+
+
 
     public LocalDate getDateOfBirth() {
         return dateOfBirth;

@@ -1,0 +1,30 @@
+[
+  {     
+    "firstName":"John2",
+    "lastName":"Doe",
+    "password":"xUwb1dqCi0",
+    "isActive":true,
+    "specialization":"yoga"
+  },
+  {
+    "firstName":"Jane",
+    "lastName":"Doe",
+    "password":"yWbisB91bz",
+    "isActive":false,
+    "specialization":"stretching"
+  },
+  {
+    "firstName":"Jane",
+    "lastName":"Doe",
+    "password":"treisB91bz",
+    "isActive":true,
+    "specialization":"stretching"
+  },
+  {
+    "firstName":"Jane",
+    "lastName":"Doe",
+    "password":"yWbisB91bz",
+    "isActive":false,
+    "specialization":"resistance"
+  }
+]

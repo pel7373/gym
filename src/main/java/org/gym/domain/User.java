@@ -1,24 +1,23 @@
 package org.gym.domain;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
 
 import static org.springframework.beans.factory.config.BeanDefinition.SCOPE_PROTOTYPE;
 
 @Component
 @Scope(SCOPE_PROTOTYPE)
 public class User {
-    //private long userId;
+    private long id;
     private String firstName;
     private String lastName;
     private String userName;
     private String password;
     private Boolean isActive;
 
-    private int serialNumber;
+    private boolean isUserNameApproved = false;
+
+    private static int serialNumber;
 
     public User() {
     }
@@ -26,9 +25,17 @@ public class User {
     public User(String firstName, String lastName, String userName, String password, boolean isActive) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.userName = userName;
+        this.userName = firstName + "." + lastName;
         this.password = password;
         this.isActive = isActive;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -52,7 +59,17 @@ public class User {
     }
 
     public void setUserName(String userName) {
+        if(!isUserNameApproved) {
+            this.userName = firstName + "." + lastName;
+        }
+    }
+
+    public void setApprovedUserName(String userName) {
         this.userName = userName;
+    }
+
+    public void approveUserName() {
+        isUserNameApproved = true;
     }
 
     public String getPassword() {
@@ -71,10 +88,19 @@ public class User {
         this.isActive = isActive;
     }
 
+    public static int getSerialNumber() {
+        return serialNumber;
+    }
+
+    public static void incrementSerialNumber() {
+        serialNumber++;
+    }
+
     @Override
     public String toString() {
         return "User{" +
-                "firstName='" + firstName + '\'' +
+                "id=" + id + '\'' +
+                ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
