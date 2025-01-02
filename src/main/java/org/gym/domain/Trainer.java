@@ -14,11 +14,6 @@ public class Trainer extends User {
     @JsonProperty("specialization")
     private TrainingType specialization;
 
-//    public Trainer(String firstName, String lastName, String userName, String password, boolean isActive, TrainingType specialization) {
-//        super(firstName, lastName, userName, password, isActive);
-//        this.specialization = specialization;
-//    }
-
     @Override
     public String toString() {
         return "Trainer{" +

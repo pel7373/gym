@@ -9,11 +9,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.annotation.Order;
 
 import java.security.SecureRandom;
 
 @Configuration
 @PropertySource( "classpath:application.properties" )
+@Order(1)
 public class Config {
     public final static String ID_CANT_BE_NEGATIVE = "id can't be negative";
 
@@ -23,13 +25,17 @@ public class Config {
     }
 
     public static String TRAINERS_FILE_TO_READ_JSONS;
+    public static String TRAINERS_FILE_TO_WRITE_JSONS;
     public static String TRAINEES_FILE_TO_READ_JSONS;
     public static String TRAININGS_FILE_TO_READ_JSONS;
 
-
-    @Value("${trainers.json}")
+    @Value("${trainers-in.json}")
     private void setTrainersFileToReadDataJson(String file) {
         TRAINERS_FILE_TO_READ_JSONS = file;
+    }
+    @Value("${trainers-out.json}")
+    private void setTrainersFileToWriteDataJson(String file) {
+        TRAINERS_FILE_TO_WRITE_JSONS = file;
     }
 
     @Value("${trainees.json}")
@@ -42,31 +48,4 @@ public class Config {
         TRAININGS_FILE_TO_READ_JSONS = file;
     }
 
-    @Configuration
-    public static class TestConfig {
-
-        @Autowired
-        private TrainerStorage trainerStorage;
-        @Autowired
-        private TrainerDAO trainerDAO;
-
-        @Bean
-        public SecureRandom secureRandomBean() {
-            return new SecureRandom();
-        }
-
-        @Bean
-        public TrainerStorage trainerStorage() {
-            return new TrainerStorage();
-        }
-
-        @Bean
-        public TrainerDAO trainerDAO() {
-            return new TrainerDAO(trainerStorage);
-        }
-        @Bean
-        public TrainerService trainerService() {
-            return new TrainerService(trainerDAO, secureRandomBean());
-        }
-    }
 }

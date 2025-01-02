@@ -34,7 +34,7 @@ public class TrainerDAO implements CrudDAO<Trainer, Long> {
 
     @Override
     public void save(Trainer trainer) {
-        LOGGER.info(String.format("save is saving trainer with id %d", trainer.getId()));
+        LOGGER.info(String.format("save is saving trainer %s", trainer));
         trainerStorage.save(trainer);
     }
 

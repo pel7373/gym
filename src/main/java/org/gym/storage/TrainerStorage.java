@@ -1,31 +1,45 @@
 package org.gym.storage;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gym.domain.Trainer;
 import org.gym.exception.EntityNotFoundException;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.io.File;
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.gym.config.Config.TRAINERS_FILE_TO_READ_JSONS;
+import static org.gym.config.Config.TRAINERS_FILE_TO_WRITE_JSONS;
 
 @Component
 public class TrainerStorage implements CrudStorage<Trainer, Long> {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-    private final HashMap<Long, Trainer> trainerStorage = new HashMap<>();
+    ObjectMapper objectMapper = new ObjectMapper();
+    private final HashMap<Long, Trainer> trainerMap = new HashMap<>();
     private long storageNextId;
+
+    {
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+    }
 
     @Override
     public List<Trainer> findAll() {
         LOGGER.info("findAll works successfully");
-        return new ArrayList<>(trainerStorage.values());
+        return new ArrayList<>(trainerMap.values());
     }
 
     @Override
     public Trainer findById(Long id) throws EntityNotFoundException {
-        Trainer trainer = Optional.ofNullable(trainerStorage.get(id))
+        Trainer trainer = Optional.ofNullable(trainerMap.get(id))
                 .orElseThrow(() ->
                     new EntityNotFoundException(String.format("Trainer with id %d wasn't found!", id)));
 
@@ -36,23 +50,59 @@ public class TrainerStorage implements CrudStorage<Trainer, Long> {
     @Override
     public void save(Trainer trainer) {
         trainer.setId(storageNextId);
-        trainerStorage.put(storageNextId++, trainer);
+        trainerMap.put(storageNextId++, trainer);
         LOGGER.info(String.format("save saved trainer with id %d", trainer.getId()));
     }
 
     @Override
     public void update(Long id, Trainer trainer) {
-        trainerStorage.put(id, trainer);
+        trainerMap.put(id, trainer);
         LOGGER.info(String.format("update updated trainer with id %d", trainer.getId()));
     }
 
     @Override
     public void deleteById(Long id) {
-        if(trainerStorage.containsKey(id)) {
+        if(trainerMap.containsKey(id)) {
             LOGGER.info(String.format("deleteById deleted trainer with id %d", id));
-            trainerStorage.remove(id);
+            trainerMap.remove(id);
         } else {
             LOGGER.info(String.format("deleteById didn't delete trainer with id %d, because trainerStorage doesn't contain it", id));
         }
     }
+
+    @PostConstruct
+    private void restoreDataFromFileToStorage() throws IOException {
+        try {
+            List<Trainer> trainerList = objectMapper.readValue(new File(TRAINERS_FILE_TO_READ_JSONS), new TypeReference<List<Trainer>>(){});
+            trainerList.forEach(t -> {
+                trainerMap.put(t.getId(), t);
+            });
+
+            storageNextId = trainerList.stream()
+                    .mapToLong(Trainer::getId)
+                    .max().getAsLong()
+            + 1;
+        } catch (IOException e) {
+            String errorMessage = String.format("restoreDataFromFileToDb couldn't read file %s", TRAINERS_FILE_TO_READ_JSONS);
+            LOGGER.info(errorMessage);
+            throw new IOException(errorMessage);
+        }
+        LOGGER.info(String.format("restoreDataFromFileToDb restored storage with data from file %s", TRAINERS_FILE_TO_READ_JSONS));
+    }
+
+    @PreDestroy
+    public void backupDataFromStorageToFile() throws IOException {
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
+        try {
+            List<Trainer> trainerList = new ArrayList<>(trainerMap.values());
+            objectMapper.writeValue(new File(TRAINERS_FILE_TO_WRITE_JSONS), trainerList);
+        } catch (IOException e) {
+            String errorMessage = String.format("backupDataFromStorageToFile couldn't write to file %s", TRAINERS_FILE_TO_WRITE_JSONS);
+            LOGGER.info(errorMessage);
+            throw new IOException(errorMessage);
+        }
+        LOGGER.info(String.format("backupDataFromStorageToFile saved data from storage to file %s", TRAINERS_FILE_TO_WRITE_JSONS));
+    }
 }
+//DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm a z");
+//objectMapper.setDateFormat(df);
