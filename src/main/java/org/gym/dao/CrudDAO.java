@@ -9,7 +9,7 @@ public interface CrudDAO<T, I> {
 
     T findById(I id) throws EntityNotFoundException;
 
-    T save(T t);
+    void save(T t);
 
     void update(I id, T t);
 

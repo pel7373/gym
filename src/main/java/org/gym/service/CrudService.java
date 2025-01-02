@@ -2,14 +2,14 @@ package org.gym.service;
 
 import java.util.List;
 
-public interface CrudService<T, I> {
-    List<T> getAll();
+public interface CrudService<T, Dto, I> {
+    List<Dto> getAll();
 
-    T getById(I id);
+    Dto getById(I id);
 
     void save(T t);
 
-    void update(I id, T t);
+    void update(I id, Dto d);
 
     void deleteById(I id);
 }

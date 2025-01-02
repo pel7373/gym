@@ -1,7 +1,8 @@
 [
-  {     
-    "firstName":"John2",
+  {
+    "firstName":"John",
     "lastName":"Doe",
+    "userName":"John.Doe",
     "password":"xUwb1dqCi0",
     "isActive":true,
     "specialization":"yoga"
@@ -9,6 +10,7 @@
   {
     "firstName":"Jane",
     "lastName":"Doe",
+    "userName":"Jane.Doe",
     "password":"yWbisB91bz",
     "isActive":false,
     "specialization":"stretching"
@@ -16,6 +18,7 @@
   {
     "firstName":"Jane",
     "lastName":"Doe",
+    "userName":"Jane.Doe0",
     "password":"treisB91bz",
     "isActive":true,
     "specialization":"stretching"
@@ -23,6 +26,7 @@
   {
     "firstName":"Jane",
     "lastName":"Doe",
+    "userName":"Jane.Doe1",
     "password":"yWbisB91bz",
     "isActive":false,
     "specialization":"resistance"

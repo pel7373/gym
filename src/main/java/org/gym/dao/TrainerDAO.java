@@ -22,26 +22,31 @@ public class TrainerDAO implements CrudDAO<Trainer, Long> {
 
     @Override
     public List<Trainer> findAll() {
+        LOGGER.info("findAll has worked");
         return trainerStorage.findAll();
     }
 
     @Override
     public Trainer findById(Long id) throws EntityNotFoundException {
+        LOGGER.info(String.format("findById is finding trainer with id %d", id));
         return trainerStorage.findById(id);
     }
 
     @Override
-    public Trainer save(Trainer trainer) {
-        return trainerStorage.save(trainer);
+    public void save(Trainer trainer) {
+        LOGGER.info(String.format("save is saving trainer with id %d", trainer.getId()));
+        trainerStorage.save(trainer);
     }
 
     @Override
     public void update(Long id, Trainer trainer) {
+        LOGGER.info(String.format("update is updating trainer with id %d", id));
         trainerStorage.update(id, trainer);
     }
 
     @Override
     public void deleteById(Long id) {
+        LOGGER.info(String.format("deleteById is deleting trainer with id %d", id));
         trainerStorage.deleteById(id);
     }
 }
