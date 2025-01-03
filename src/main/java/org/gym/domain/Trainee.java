@@ -15,5 +15,17 @@ public class Trainee extends User {
     private LocalDate dateOfBirth;
     private String address;
 
-
+    @Override
+    public String toString() {
+        return "Trainer{" +
+                "id=" + getId() + '\'' +
+                ", firstName='" + getFirstName() + '\'' +
+                ", lastName='" + getLastName() + '\'' +
+                ", userName='" + getUserName() + '\'' +
+                ", password='" + getPassword() + '\'' +
+                ", isActive=" + getIsActive() +
+                ", dateOfBirth='" + dateOfBirth + '\'' +
+                ", address='" + address + '\'' +
+                '}';
+    }
 }

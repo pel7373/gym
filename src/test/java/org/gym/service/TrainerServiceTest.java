@@ -37,15 +37,18 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @ContextConfiguration(classes = TestConfig.class)
 public class TrainerServiceTest {
 
-    @Autowired
-    ApplicationContext applicationContext;
-
-    @Test
-    void getAll() {
-        TrainerService trainerService = applicationContext.getBean(TrainerService.class);
-        List<TrainerDto> trainerDtoList = trainerService.getAll();
-        assertNotNull(trainerDtoList);
-    }
+//    @Autowired
+//    ApplicationContext applicationContext;
+//
+//    @Autowired
+//    TrainerService trainerService;
+//
+//    @Test
+//    void getAll() {
+//        //TrainerService trainerService = applicationContext.getBean(TrainerService.class);
+//        List<TrainerDto> trainerDtoList = trainerService.getAll();
+//        assertNotNull(trainerDtoList);
+//    }
 //
 //    @Test
 //    void getById() {

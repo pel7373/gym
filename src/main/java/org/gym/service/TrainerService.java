@@ -21,16 +21,14 @@ import java.util.stream.IntStream;
 import static org.gym.config.Config.ID_CANT_BE_NEGATIVE;
 
 @Service
-public class TrainerService implements CrudService<Trainer, TrainerDto, Long> {
+public class TrainerService {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-    ObjectMapper objectMapper = new ObjectMapper();
     private final SecureRandom secureRandom;
     private TrainerDAO trainerDAO;
     private int serialNumberForUserName;
 
-    {
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Autowired
     public TrainerService(TrainerDAO trainerDAO, SecureRandom secureRandom) {
@@ -39,7 +37,6 @@ public class TrainerService implements CrudService<Trainer, TrainerDto, Long> {
 
     }
 
-    @Override
     public List<TrainerDto> getAll() {
         LOGGER.info("getAll is working");
         List<TrainerDto> trainerDtoList = new ArrayList<>();
@@ -50,7 +47,7 @@ public class TrainerService implements CrudService<Trainer, TrainerDto, Long> {
         return trainerDtoList;
     }
 
-    @Override
+
     public TrainerDto getById(Long id) {
         if(id < 0) {
             throw new InvalidIdException(ID_CANT_BE_NEGATIVE);
@@ -60,7 +57,6 @@ public class TrainerService implements CrudService<Trainer, TrainerDto, Long> {
         return trainerDto;
     }
 
-    @Override
     public void save(Trainer trainer) {
         trainer.setUserName(createUserNameForTrainer(trainer, trainerDAO.findAll()));
         trainer.setPassword(createSecurePassword());
@@ -68,7 +64,6 @@ public class TrainerService implements CrudService<Trainer, TrainerDto, Long> {
         trainerDAO.save(trainer);
     }
 
-    @Override
     public void update(Long id, TrainerDto trainerDto) {
         if(id < 0) {
             throw new InvalidIdException(ID_CANT_BE_NEGATIVE);
@@ -81,7 +76,6 @@ public class TrainerService implements CrudService<Trainer, TrainerDto, Long> {
         trainerDAO.update(id, trainer);
     }
 
-    @Override
     public void deleteById(Long id) {
         if(id < 0) {
             throw new InvalidIdException(ID_CANT_BE_NEGATIVE);

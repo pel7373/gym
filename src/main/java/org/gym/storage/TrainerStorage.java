@@ -10,12 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.gym.domain.Trainer;
 import org.gym.exception.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.gym.config.Config.TRAINERS_FILE_TO_READ_JSONS;
 import static org.gym.config.Config.TRAINERS_FILE_TO_WRITE_JSONS;
@@ -23,13 +23,11 @@ import static org.gym.config.Config.TRAINERS_FILE_TO_WRITE_JSONS;
 @Component
 public class TrainerStorage implements CrudStorage<Trainer, Long> {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-    ObjectMapper objectMapper = new ObjectMapper();
     private final HashMap<Long, Trainer> trainerMap = new HashMap<>();
     private long storageNextId;
 
-    {
-        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-    }
+    @Autowired
+    ObjectMapper objectMapper;
 
     @Override
     public List<Trainer> findAll() {
@@ -92,7 +90,6 @@ public class TrainerStorage implements CrudStorage<Trainer, Long> {
 
     @PreDestroy
     public void backupDataFromStorageToFile() throws IOException {
-        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         try {
             List<Trainer> trainerList = new ArrayList<>(trainerMap.values());
             objectMapper.writeValue(new File(TRAINERS_FILE_TO_WRITE_JSONS), trainerList);
@@ -104,5 +101,3 @@ public class TrainerStorage implements CrudStorage<Trainer, Long> {
         LOGGER.info(String.format("backupDataFromStorageToFile saved data from storage to file %s", TRAINERS_FILE_TO_WRITE_JSONS));
     }
 }
-//DateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm a z");
-//objectMapper.setDateFormat(df);
