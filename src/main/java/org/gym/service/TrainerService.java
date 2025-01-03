@@ -19,13 +19,12 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 import static org.gym.config.Config.ID_CANT_BE_NEGATIVE;
-import static org.gym.config.Config.TRAINERS_FILE_TO_READ_JSONS;
 
 @Service
 public class TrainerService implements CrudService<Trainer, TrainerDto, Long> {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     ObjectMapper objectMapper = new ObjectMapper();
-    private final SecureRandom secureRandomBean;
+    private final SecureRandom secureRandom;
     private TrainerDAO trainerDAO;
     private int serialNumberForUserName;
 
@@ -34,9 +33,10 @@ public class TrainerService implements CrudService<Trainer, TrainerDto, Long> {
     }
 
     @Autowired
-    public TrainerService(TrainerDAO trainerDAO, SecureRandom secureRandomBean) {
+    public TrainerService(TrainerDAO trainerDAO, SecureRandom secureRandom) {
+        this.secureRandom = secureRandom;
         this.trainerDAO = trainerDAO;
-        this.secureRandomBean = secureRandomBean;
+
     }
 
     @Override
@@ -92,7 +92,7 @@ public class TrainerService implements CrudService<Trainer, TrainerDto, Long> {
     }
 
     public String createSecurePassword() {
-        IntStream is = secureRandomBean.ints(10, 33, 127);
+        IntStream is = secureRandom.ints(10, 33, 127);
         String securePassword = is.collect(
                 StringBuilder::new,
                 (sb, i) -> sb.append((char)i),
