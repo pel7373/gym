@@ -26,9 +26,12 @@ public class TrainingStorage implements CrudStorage<Training, Long> {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final HashMap<Long, Training> trainingMap = new HashMap<>();
     private long storageNextId;
+    ObjectMapper objectMapper;
 
     @Autowired
-    ObjectMapper objectMapper;
+    public TrainingStorage(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public List<Training> findAll() {
@@ -40,9 +43,9 @@ public class TrainingStorage implements CrudStorage<Training, Long> {
     public Training findById(Long id) throws EntityNotFoundException {
         Training Training = Optional.ofNullable(trainingMap.get(id))
                 .orElseThrow(() ->
-                        new EntityNotFoundException(String.format("Training with id %d wasn't found!", id)));
+                        new EntityNotFoundException(String.format("The training with id %d wasn't found!", id)));
 
-        LOGGER.info(String.format("findById found trainer with id %d", id));
+        LOGGER.info(String.format("findById found the training with id %d", id));
         return Training;
     }
 
@@ -50,54 +53,62 @@ public class TrainingStorage implements CrudStorage<Training, Long> {
     public void save(Training Training) {
         Training.setId(storageNextId);
         trainingMap.put(storageNextId++, Training);
-        LOGGER.info(String.format("save saved trainer with id %d", Training.getId()));
+        LOGGER.info(String.format("save saved the training with id %d", Training.getId()));
     }
 
     @Override
     public void update(Long id, Training Training) {
         trainingMap.put(id, Training);
-        LOGGER.info(String.format("update updated trainer with id %d", Training.getId()));
+        LOGGER.info(String.format("update updated the training with id %d", Training.getId()));
     }
 
     @Override
     public void deleteById(Long id) {
         if(trainingMap.containsKey(id)) {
-            LOGGER.info(String.format("deleteById deleted Training with id %d", id));
+            LOGGER.info(String.format("deleteById deleted the training with id %d", id));
             trainingMap.remove(id);
         } else {
-            LOGGER.info(String.format("deleteById didn't delete Training with id %d, because TrainingStorage doesn't contain it", id));
+            LOGGER.info(String.format("deleteById didn't delete the training with id %d, because trainingStorage doesn't contain it", id));
         }
     }
 
     @PostConstruct
     private void restoreDataFromFileToStorage() throws IOException {
+        List<Training> trainingList;
         try {
-            List<Training> TrainingList = objectMapper.readValue(new File(TRAININGS_FILE_TO_READ_JSONS), new TypeReference<List<Training>>(){});
-            TrainingList.forEach(t -> {
+            trainingList = objectMapper.readValue(new File(TRAININGS_FILE_TO_READ_JSONS), new TypeReference<List<Training>>(){});
+        } catch (IOException e) {
+            String errorMessage = String.format("restoreDataFromFileToDb couldn't read file %s", TRAININGS_FILE_TO_READ_JSONS);
+            LOGGER.warn(errorMessage);
+            return;
+            //throw new IOException(errorMessage);
+        }
+
+        if(trainingList != null && !trainingList.isEmpty()) {
+            trainingList.forEach(t -> {
                 trainingMap.put(t.getId(), t);
             });
 
-            storageNextId = TrainingList.stream()
+            storageNextId = trainingList.stream()
                     .mapToLong(Training::getId)
                     .max().getAsLong()
                     + 1;
-        } catch (IOException e) {
-            String errorMessage = String.format("restoreDataFromFileToDb couldn't read file %s", TRAININGS_FILE_TO_READ_JSONS);
-            LOGGER.info(errorMessage);
-            throw new IOException(errorMessage);
+            LOGGER.info(String.format("restoreDataFromFileToDb restored storage with data from file %s", TRAININGS_FILE_TO_READ_JSONS));
+        } else {
+            LOGGER.info(String.format("restoreDataFromFileToDb has read the file %s, but can't get data from it", TRAININGS_FILE_TO_READ_JSONS));
         }
-        LOGGER.info(String.format("restoreDataFromFileToDb restored storage with data from file %s", TRAININGS_FILE_TO_READ_JSONS));
     }
 
     @PreDestroy
-    public void backupDataFromStorageToFile() throws IOException {
+    public void backupDataFromStorageToFile() {
         try {
             List<Training> TrainingList = new ArrayList<>(trainingMap.values());
             objectMapper.writeValue(new File(TRAININGS_FILE_TO_WRITE_JSONS), TrainingList);
         } catch (IOException e) {
             String errorMessage = String.format("backupDataFromStorageToFile couldn't write to file %s", TRAININGS_FILE_TO_WRITE_JSONS);
-            LOGGER.info(errorMessage);
-            throw new IOException(errorMessage);
+            LOGGER.warn(errorMessage);
+            return;
+            //throw new IOException(errorMessage);
         }
         LOGGER.info(String.format("backupDataFromStorageToFile saved data from storage to file %s", TRAININGS_FILE_TO_WRITE_JSONS));
     }

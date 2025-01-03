@@ -25,13 +25,4 @@
   "isActive" : true,
   "dateOfBirth" : "1990-02-23",
   "address" : "Vinnitsya, Soborna str. 15, ap. 6"
-}, {
-  "id" : 3,
-  "firstName" : "Maria",
-  "lastName" : "Ivanenko",
-  "userName" : "Maria.Ivanenko2",
-  "password" : "B']t]RVbQs",
-  "isActive" : true,
-  "dateOfBirth" : "1990-02-23",
-  "address" : "Vinnitsya, Soborna str. 15, ap. 6"
 } ]

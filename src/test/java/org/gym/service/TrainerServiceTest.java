@@ -69,12 +69,12 @@ public class TrainerServiceTest {
     @Test
     void createSecurePassword(ApplicationContext applicationContext) {
 
-//        String testPassword = "ABCDEFGHIJ";
-//        SecureRandom mockSecureRandom = Mockito.mock(SecureRandom.class);
-//        Mockito.when(mockSecureRandom.ints(10, 33, 127)).thenReturn(testPassword.chars());
-//        //TrainerService trainerService = applicationContext.getBean(TrainerService.class);
-//        String password = trainerService.createSecurePassword();
-//        assertEquals(testPassword, password);
+        String testPassword = "ABCDEFGHIJ";
+        SecureRandom mockSecureRandom = Mockito.mock(SecureRandom.class);
+        Mockito.when(mockSecureRandom.ints(10, 33, 127)).thenReturn(testPassword.chars());
+        TrainerService trainerService = applicationContext.getBean(TrainerService.class);
+        String password = trainerService.createSecurePassword();
+        assertEquals(testPassword, password);
 
 
     }

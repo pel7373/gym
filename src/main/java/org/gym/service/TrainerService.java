@@ -23,18 +23,16 @@ import static org.gym.config.Config.ID_CANT_BE_NEGATIVE;
 @Service
 public class TrainerService {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final ObjectMapper objectMapper;
+    private final TrainerDAO trainerDAO;
     private final SecureRandom secureRandom;
-    private TrainerDAO trainerDAO;
     private int serialNumberForUserName;
 
     @Autowired
-    ObjectMapper objectMapper;
-
-    @Autowired
-    public TrainerService(TrainerDAO trainerDAO, SecureRandom secureRandom) {
+    public TrainerService(TrainerDAO trainerDAO, ObjectMapper objectMapper, SecureRandom secureRandom) {
         this.secureRandom = secureRandom;
         this.trainerDAO = trainerDAO;
-
+        this.objectMapper = objectMapper;
     }
 
     public List<TrainerDto> getAll() {

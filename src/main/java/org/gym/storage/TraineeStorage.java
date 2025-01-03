@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import org.gym.domain.Trainee;
+import org.gym.domain.Training;
 import org.gym.exception.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -20,17 +21,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import static org.gym.config.Config.TRAINEES_FILE_TO_READ_JSONS;
-import static org.gym.config.Config.TRAINEES_FILE_TO_WRITE_JSONS;
+import static org.gym.config.Config.*;
+import static org.gym.config.Config.TRAININGS_FILE_TO_READ_JSONS;
 
 @Component
 public class TraineeStorage implements CrudStorage<Trainee, Long> {
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final HashMap<Long, Trainee> traineeMap = new HashMap<>();
     private long storageNextId;
+    ObjectMapper objectMapper;
 
     @Autowired
-    ObjectMapper objectMapper;
+    public TraineeStorage(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     @Override
     public List<Trainee> findAll() {
@@ -72,9 +76,17 @@ public class TraineeStorage implements CrudStorage<Trainee, Long> {
     }
 
     @PostConstruct
-    private void restoreDataFromFileToStorage() throws IOException {
+    private void restoreDataFromFileToStorage() {
+        List<Trainee> traineeList;
         try {
-            List<Trainee> traineeList = objectMapper.readValue(new File(TRAINEES_FILE_TO_READ_JSONS), new TypeReference<List<Trainee>>(){});
+            traineeList = objectMapper.readValue(new File(TRAINEES_FILE_TO_READ_JSONS), new TypeReference<List<Trainee>>(){});
+        } catch (IOException e) {
+            String errorMessage = String.format("restoreDataFromFileToDb couldn't read file %s", TRAINEES_FILE_TO_READ_JSONS);
+            LOGGER.warn(errorMessage);
+            return;
+            //throw new IOException(errorMessage);
+        }
+        if(traineeList != null && !traineeList.isEmpty()) {
             traineeList.forEach(t -> {
                 traineeMap.put(t.getId(), t);
             });
@@ -83,23 +95,22 @@ public class TraineeStorage implements CrudStorage<Trainee, Long> {
                     .mapToLong(Trainee::getId)
                     .max().getAsLong()
                     + 1;
-        } catch (IOException e) {
-            String errorMessage = String.format("restoreDataFromFileToDb couldn't read file %s", TRAINEES_FILE_TO_READ_JSONS);
-            LOGGER.info(errorMessage);
-            throw new IOException(errorMessage);
+            LOGGER.info(String.format("restoreDataFromFileToDb restored storage with data from file %s", TRAINEES_FILE_TO_READ_JSONS));
+        } else {
+            LOGGER.info(String.format("restoreDataFromFileToDb has read the file %s, but can't get data from it", TRAINEES_FILE_TO_READ_JSONS));
         }
-        LOGGER.info(String.format("restoreDataFromFileToDb restored storage with data from file %s", TRAINEES_FILE_TO_READ_JSONS));
     }
 
     @PreDestroy
-    public void backupDataFromStorageToFile() throws IOException {
+    public void backupDataFromStorageToFile() {
         try {
             List<Trainee> traineeList = new ArrayList<>(traineeMap.values());
             objectMapper.writeValue(new File(TRAINEES_FILE_TO_WRITE_JSONS), traineeList);
         } catch (IOException e) {
             String errorMessage = String.format("backupDataFromStorageToFile couldn't write to file %s", TRAINEES_FILE_TO_WRITE_JSONS);
-            LOGGER.info(errorMessage);
-            throw new IOException(errorMessage);
+            LOGGER.warn(errorMessage);
+            return;
+            //throw new IOException(errorMessage);
         }
         LOGGER.info(String.format("backupDataFromStorageToFile saved data from storage to file %s", TRAINEES_FILE_TO_WRITE_JSONS));
     }
